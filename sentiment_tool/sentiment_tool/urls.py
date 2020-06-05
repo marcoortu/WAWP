@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import TextPatternCreateView, IndexView
+from .views import IndexView, LabelTextView, TextPatternCreateView, ClassifyTextView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view()),
+    path('label/', LabelTextView.as_view()),
     path('add/', TextPatternCreateView.as_view()),
+    path('classify/', ClassifyTextView.as_view()),
 ]

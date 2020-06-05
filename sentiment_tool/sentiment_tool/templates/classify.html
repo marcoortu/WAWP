@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form | crispy }}
+        {% if predicted and predicted == 'positive' %}
+            <div class="alert alert-success" role="alert">{{ predicted }}</div>
+            <div class="alert alert-success" role="alert">{{ confidence }}</div>
+        {% endif %}
+        {% if predicted and predicted == 'neutral' %}
+            <div class="alert alert-primary" role="alert">{{ predicted }}</div>
+            <div class="alert alert-primary" role="alert">{{ confidence }}</div>
+        {% endif %}
+        {% if predicted and predicted == 'negative' %}
+            <div class="alert alert-danger" role="alert">{{ predicted }}</div>
+            <div class="alert alert-danger" role="alert">{{ confidence }}</div>
+        {% endif %}
+        <button type="submit" class="btn btn-success">Predict</button>
+    </form>
+{% endblock %}

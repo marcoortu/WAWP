@@ -15,6 +15,7 @@ class TextPattern(models.Model):
     sentiment = models.CharField(
         max_length=30,
         blank=True,
+        null=True,
         choices=SENTIMENT,
         default=SENTIMENT[1][0]
     )

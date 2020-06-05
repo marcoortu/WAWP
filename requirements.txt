@@ -1,2 +1,4 @@
 django==2.2.10
 django-crispy-forms
+pandas
+scikit-learn
