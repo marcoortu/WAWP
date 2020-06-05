@@ -37,3 +37,11 @@ oppure da terminale (per utenti esperti):
 Il file requirements.txt contiene la lista di tutte le librerie che serviranno durante il seminario
  come ad esempio *django*, *nltk* etc.
 
+## Avvio Applicazione Web
+
+Aprire un terminale, assicurarsi che il virtual environment sia attivo
+ed eseguire i seguenti comandi.
+```bash
+    cd sentiment_tool
+    python manage.py runserver
+```
