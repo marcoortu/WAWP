@@ -6,16 +6,16 @@
         {% csrf_token %}
         {{ form | crispy }}
         {% if predicted and predicted == 'positive' %}
-            <div class="alert alert-success" role="alert">{{ predicted }}</div>
-            <div class="alert alert-success" role="alert">{{ confidence }}</div>
+            <div class="alert alert-success" role="alert">sentiment: {{ predicted }}</div>
+            <div class="alert alert-success" role="alert">confidence: {{ confidence|floatformat:3 }}</div>
         {% endif %}
         {% if predicted and predicted == 'neutral' %}
-            <div class="alert alert-primary" role="alert">{{ predicted }}</div>
-            <div class="alert alert-primary" role="alert">{{ confidence }}</div>
+            <div class="alert alert-primary" role="alert">sentiment: {{ predicted }}</div>
+            <div class="alert alert-primary" role="alert">confidence: {{ confidence|floatformat:3 }}</div>
         {% endif %}
         {% if predicted and predicted == 'negative' %}
-            <div class="alert alert-danger" role="alert">{{ predicted }}</div>
-            <div class="alert alert-danger" role="alert">{{ confidence }}</div>
+            <div class="alert alert-danger" role="alert">sentiment: {{ predicted }}</div>
+            <div class="alert alert-danger" role="alert">confidence: {{ confidence|floatformat:3 }}</div>
         {% endif %}
         <button type="submit" class="btn btn-success">Predict</button>
     </form>

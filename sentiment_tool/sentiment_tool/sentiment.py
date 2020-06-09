@@ -1,45 +1,73 @@
-import pandas as pd
-import json
+import pickle
+from os import path
+
+import django
+from django.conf import settings
+from django.db.models import Q
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+
+from .settings import DATABASES, INSTALLED_APPS
+
+if not settings.configured:
+    settings.configure(DATABASES=DATABASES, INSTALLED_APPS=INSTALLED_APPS)
+    django.setup()
+    from sentiment_tool.sentiment_tool.models import *
 
 
-def sentiment_label(sentiment):
-    if sentiment > 0:
-        return 'positive'
-    if sentiment < 0:
-        return 'negative'
-    return 'neutral'
+class ItalianSentimentAnalyzer:
+    DATASET_SVM_PICKLE = '../dataset/svm.pickle'
 
+    @classmethod
+    def train(cls):
+        documents = TextPattern.objects.filter(~Q(sentiment=None)).all()
+        pipeline_svm = Pipeline([
+            ('feature_vect', TfidfVectorizer(strip_accents='unicode',
+                                             tokenizer=word_tokenize,
+                                             stop_words=stopwords.words('italian'),
+                                             decode_error='ignore',
+                                             analyzer='word',
+                                             norm='l2',
+                                             ngram_range=(1, 3)
+                                             )),
+            ('clf', SVC(probability=True,
+                        C=1,
+                        shrinking=True,
+                        kernel='rbf'))
+        ])
+        x_data = [doc.text for doc in documents]
+        y_data = [doc.sentiment for doc in documents]
+        x_train, x_test, y_train, y_test = train_test_split(
+            x_data, y_data,
+            test_size=0.2,
+            # random_state=42
+        )
+        pipeline_svm.fit(x_train, y_train)
+        y_pred = pipeline_svm.predict(x_test)
+        print(accuracy_score(y_test, y_pred))
+        print(precision_recall_fscore_support(y_test, y_pred))
+        print(classification_report(y_test, y_pred))
+        pickle.dump(pipeline_svm, open(cls.DATASET_SVM_PICKLE, "wb"))
 
-def generate_fixtures():
-    df = pd.read_csv(
-        '../dataset/absita_2018_training.csv',
-        delimiter=';'
-    )
-    column_names = df.columns
-    rows = []
-    for index, row in df.iterrows():
-        sentiment = 0
-        json_row = {
-            "model": "sentiment_tool.TextPattern",
-            "pk": index,
-            "fields": {
-                "text": row['sentence'],
-                "sentiment": ''
-            }
+    def predict(self, text):
+        if not path.exists(self.DATASET_SVM_PICKLE):
+            self.train()
+        pipeline_svm = pickle.load(open(self.DATASET_SVM_PICKLE, "rb"))
+        return {
+            'sentiment': pipeline_svm.predict([text])[0],
+            'probability': max(pipeline_svm.predict_proba([text])[0]),
         }
-        for column_name in column_names:
-            if 'positive' in column_name and row[column_name] > 0:
-                sentiment += 1
-            elif 'negative' in column_name and row[column_name] > 0:
-                sentiment -= 1
-        json_row['fields']['sentiment'] = sentiment_label(sentiment)
-        if index > 5000:
-            json_row['fields']['sentiment'] = None
-        rows.append(json_row)
-    with open('./fixtures/textpattern.json', mode='w') as json_file:
-        json_file.write(json.dumps(rows))
 
 
 if __name__ == '__main__':
-    # generate_fixtures()
-    pass
+    clf = ItalianSentimentAnalyzer()
+    clf.train()
+    print(clf.predict('Il rumore di martello e trapano di un operaio al lavoro la mattina 7,30'))
+    print(clf.predict('Camera spaziosa, letti largho e comodi, colazione varia e personale gentile'))
+    print(clf.predict(
+        "L'hotel avrebbe bisogno di una ripulita, non tanto le stanze dato che la mia era spaziosa e confortevole, ma il corridoio e la moquette."))

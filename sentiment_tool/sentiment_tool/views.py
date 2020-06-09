@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView
 
+from .sentiment import ItalianSentimentAnalyzer
 from .forms import TextPatternUpdateForm, TextPatternClassifyForm
 from .models import TextPattern
 
@@ -48,8 +49,14 @@ class ClassifyTextView(View):
     def post(self, request, *args, **kwargs):
         form = TextPatternClassifyForm(request.POST)
         if form.is_valid():
+            clf = ItalianSentimentAnalyzer()
+            predicted = clf.predict(form.cleaned_data['text'])
             return render(
                 request, self.template_name,
-                {'form': form, 'predicted': 'neutral', 'confidence': 0.98}
+                {
+                    'form': form,
+                    'predicted': predicted['sentiment'],
+                    'confidence': predicted['probability']
+                }
             )
         return render(request, self.template_name, {'form': form})
