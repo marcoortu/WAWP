@@ -12,6 +12,12 @@ class IndexView(TemplateView):
     template_name = 'index.html'
 
 
+class TextPatternCreateView(CreateView):
+    model = TextPattern
+    fields = ('text',)
+    template_name = 'textpattern/create.html'
+
+
 class LabelTextView(UpdateView):
     model = TextPattern
     form_class = TextPatternUpdateForm
@@ -29,14 +35,9 @@ class LabelTextView(UpdateView):
         form = self.form_class(request.POST, instance=instance)
         if form.is_valid():
             form.save()
+            ItalianSentimentAnalyzer.train()
             return HttpResponseRedirect('/label/')
         return render(request, self.template_name, {'form': form})
-
-
-class TextPatternCreateView(CreateView):
-    model = TextPattern
-    fields = ('text', 'sentiment')
-    template_name = 'textpattern/create.html'
 
 
 class ClassifyTextView(View):

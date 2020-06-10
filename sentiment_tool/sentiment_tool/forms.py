@@ -15,9 +15,13 @@ class TextPatternUpdateForm(forms.ModelForm):
 
 
 class TextPatternClassifyForm(forms.Form):
-    text = forms.CharField(widget=forms.Textarea)
+    text = forms.CharField(widget=forms.Textarea, label='Testo')
 
     class Meta:
         widgets = {
             'text': forms.Textarea(),
         }
+
+
+class TextPatternForm(forms.Form):
+    text = forms.CharField(widget=forms.Textarea, label='Testo')
