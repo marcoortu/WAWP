@@ -49,7 +49,9 @@ class ItalianSentimentAnalyzer:
     def train(cls):
         """
             SGDClassifier (Stochastic Gradient Descent ) implements a Linear SVM
-            with loss = 'hinge' and penalty = 'L2'
+            with:
+            loss = 'hinge' (https://en.wikipedia.org/wiki/Hinge_loss)
+            penalty = 'L2' (Eucliedean distance, root square of sum of squares of vector elements)
             https://scikit-learn.org/stable/modules/sgd.html#sgd
         :return: None
         """
