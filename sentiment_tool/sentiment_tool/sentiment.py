@@ -24,9 +24,9 @@ else:
 
 
 class ItalianSentimentAnalyzer:
-    SVM_PICKLE_PATH = '../dataset/svm.pickle'
-    VECTORIZER_PICKLE_PATH = '../dataset/tfidf_vect.pickle'
-    CALIBRATOR_PICKLE_PATH = '../dataset/calibrator.pickle'
+    SVM_PICKLE_PATH = '{}/dataset/svm.pickle'.format(settings.BASE_DIR)
+    VECTORIZER_PICKLE_PATH = '{}/dataset/tfidf_vect.pickle'.format(settings.BASE_DIR)
+    CALIBRATOR_PICKLE_PATH = '{}/dataset/calibrator.pickle'.format(settings.BASE_DIR)
 
     @classmethod
     def get_dataset(cls):
