@@ -39,6 +39,15 @@ Il file requirements.txt contiene la lista di tutte le librerie che serviranno d
 
 ## Avvio Applicazione Web
 
+Aprire un terminale ed eseguire l'interprete Python per scaricare i dati necessari 
+a NLTK.
+
+```bash
+    python
+    >>> import nltk
+    >>> nltk.download('punkt')
+```
+
 Aprire un terminale, assicurarsi che il virtual environment sia attivo
 ed eseguire i seguenti comandi.
 ```bash
