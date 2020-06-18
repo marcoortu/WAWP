@@ -1,3 +1,4 @@
+import os
 import pickle
 from os import path
 
@@ -19,14 +20,18 @@ if not settings.configured:
     settings.configure(DATABASES=DATABASES, INSTALLED_APPS=INSTALLED_APPS)
     django.setup()
     from sentiment_tool.sentiment_tool.models import *
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 else:
     from .models import *
 
+    BASE_DIR = settings.BASE_DIR
+
 
 class ItalianSentimentAnalyzer:
-    SVM_PICKLE_PATH = '{}/dataset/svm.pickle'.format(settings.BASE_DIR)
-    VECTORIZER_PICKLE_PATH = '{}/dataset/tfidf_vect.pickle'.format(settings.BASE_DIR)
-    CALIBRATOR_PICKLE_PATH = '{}/dataset/calibrator.pickle'.format(settings.BASE_DIR)
+    SVM_PICKLE_PATH = '{}/dataset/svm.pickle'.format(BASE_DIR)
+    VECTORIZER_PICKLE_PATH = '{}/dataset/tfidf_vect.pickle'.format(BASE_DIR)
+    CALIBRATOR_PICKLE_PATH = '{}/dataset/calibrator.pickle'.format(BASE_DIR)
 
     @classmethod
     def get_dataset(cls):
